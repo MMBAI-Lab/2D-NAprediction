@@ -145,6 +145,41 @@ micromamba run -n nap-thermo python scripts/run_all.py \
 
 This runs all 10 predictors on T→U-transcribed sequences and reports the resulting dot-brackets tagged as DNA in the CSV.
 
+### DNA support by tool
+
+The 10 predictors fall into three tiers depending on how they handle DNA input.
+
+**Native DNA (4)** — the wrapper forwards DNA thermodynamic parameters to the binary:
+
+| Tool | How |
+|---|---|
+| ViennaRNA | `--paramFile=DNA` (Turner DNA parameters) ([vienna.py:27](scripts/predictors/vienna.py#L27)) |
+| NUPACK | `material="dna"` (NUPACK 4 native DNA model) ([nupack.py:19](scripts/predictors/nupack.py#L19)) |
+| RNAstructure | `--DNA` flag ([rnastructure.py:38](scripts/predictors/rnastructure.py#L38)) |
+| mfold | `NA=DNA` (reads `.37` parameter files for DNA) ([mfold.py:93](scripts/predictors/mfold.py#L93)) |
+
+**RNA-only — reject DNA (3)** — the wrapper explicitly returns an error when `na_type=DNA`:
+
+| Tool | Error message |
+|---|---|
+| MC-Fold | `"MC-Fold is RNA-only"` |
+| VFold2D | `"Vfold2D is RNA-only"` |
+| IPknot | `"IPknot is RNA-only"` |
+
+**Accept DNA silently but RNA-proxy (3)** — the wrappers accept `na_type=DNA` without erroring, but the underlying models are RNA-trained:
+
+| Tool | Caveat |
+|---|---|
+| CONTRAfold | Trained on (A, U, G, C). With `--na DNA`, the wrapper does **not** perform T→U substitution, so raw T characters are fed to a model that does not know them — behavior is undefined. |
+| EternaFold | Same pattern (built on CONTRAfold). |
+| MXfold2 | Neural network trained on RNA; same pattern. |
+
+**Practical recommendation:**
+
+- For authentic DNA thermodynamics, use `--na DNA` combined with `--only ViennaRNA NUPACK4 RNAstructure mfold` to restrict to the native-4.
+- For uniform coverage across all 10 tools on a DNA aptamer (at the cost of RNA-proxy accuracy), use `--dna-as-rna`: sequences are transcribed T→U and submitted as RNA, the CSV labels them as DNA for traceability, and every predictor — including the RNA-only ones — produces a result.
+- Avoid `--na DNA` without `--only`: the three silently-accepting tools (CONTRAfold, EternaFold, MXfold2) will run on raw T-containing sequences through RNA-trained models and produce undefined output. The wrappers for these three could be hardened to either error or auto-convert T→U when `na_type=DNA`; this is a pending fix.
+
 ## Pending
 
 - [ ] **60°C variants** of ViennaRNA and RNAstructure (Das 2022). Add a `temperature_c` parameter to `.predict()` or a second slot (`ViennaRNA_60C`) in [run_all.py](scripts/run_all.py).
