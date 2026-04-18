@@ -30,7 +30,7 @@ The four references in [papers/](papers/) frame the project:
 
 ## Installed predictors
 
-All 10 are operational (verified in [results/smoke/predictions.csv](results/smoke/predictions.csv) on mini hairpin and yeast tRNA-Phe).
+All 10 are operational (verified in [results/smoke/rna/predictions.csv](results/smoke/rna/predictions.csv) on mini hairpin and yeast tRNA-Phe; DNA runs under [results/smoke/dna_as_rna/](results/smoke/dna_as_rna/) and [results/smoke/dna_native/](results/smoke/dna_native/)).
 
 | Predictor | Version | Category | Key notes |
 |---|---|---|---|
@@ -124,7 +124,7 @@ micromamba run -n nap-thermo python scripts/run_all.py <input.fa> <outdir>
 Example (smoke):
 
 ```bash
-micromamba run -n nap-thermo python scripts/run_all.py resources/smoke.fa results/smoke
+micromamba run -n nap-thermo python scripts/run_all.py resources/smoke.fa results/smoke/rna
 ```
 
 Useful flags:
