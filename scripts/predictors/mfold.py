@@ -75,12 +75,16 @@ class MFold(Predictor):
 
         with tempfile.TemporaryDirectory() as td:
             td = Path(td)
-            # nafold (the Fortran kernel) was compiled with a hardcoded
-            # /usr/local/share/mfold/ data path regardless of ./configure's
-            # --prefix. It falls back to CWD, so symlink the energy tables
-            # in before running.
-            for dat in MFOLD_DATA.glob("*.dat"):
-                (td / dat.name).symlink_to(dat)
+            # nafold and newtemp (Fortran kernel + temperature helper) were
+            # compiled with a hardcoded /usr/local/share/mfold/ data path
+            # regardless of ./configure's --prefix. They fall back to CWD,
+            # so symlink every file from install/share/mfold/ in before
+            # running. RNA at 37 C needs only .dat; DNA (or any T != 37)
+            # requires newtemp to read .dg/.dh/.dgd/.dhd and synthesize the
+            # temperature-specific tables in the CWD.
+            for f in MFOLD_DATA.iterdir():
+                if f.is_file():
+                    (td / f.name).symlink_to(f)
 
             seq_file = td / "query.seq"
             seq = sequence.upper()
