@@ -56,7 +56,25 @@ def main() -> int:
     ap.add_argument("--na", choices=["RNA", "DNA"], default="RNA")
     ap.add_argument("--only", nargs="*", default=None,
                     help="Restrict to a subset of predictor names")
+    ap.add_argument("--dna-as-rna", action="store_true",
+                    help="For DNA aptamers: transcribe T->U internally and "
+                         "submit sequences as RNA to every predictor (so that "
+                         "RNA-only tools like MC-Fold, IPknot, and VFold2D can "
+                         "also run). The CSV reports na_type=DNA (parent), "
+                         "while stdout shows that the run used RNA. "
+                         "Overrides --na. Caveat: bypasses native DNA thermo "
+                         "parameters — treat results as an RNA-proxy model.")
     args = ap.parse_args()
+
+    # When --dna-as-rna is set, predictors are called with RNA (the
+    # transcribed sequence), but the CSV records the parent NA type (DNA).
+    if args.dna_as_rna:
+        run_na = "RNA"
+        parent_na = "DNA"
+        conv_note = " [DNA->RNA]"
+    else:
+        run_na = parent_na = args.na
+        conv_note = ""
 
     args.outdir.mkdir(parents=True, exist_ok=True)
     out_csv = args.outdir / "predictions.csv"
@@ -72,10 +90,11 @@ def main() -> int:
                     "runtime_s", "error"])
         fh.flush()
         for seq_id, seq in parse_fasta(args.fasta):
+            run_seq = seq.upper().replace("T", "U") if args.dna_as_rna else seq
             for p in predictors:
-                print(f"[{p.name}] {seq_id} ({len(seq)} nt)...", flush=True)
-                r = p.predict(seq, na_type=args.na)
-                w.writerow([seq_id, p.name, r.na_type,
+                print(f"[{p.name}] {seq_id} ({len(run_seq)} nt){conv_note}...", flush=True)
+                r = p.predict(run_seq, na_type=run_na)
+                w.writerow([seq_id, p.name, parent_na,
                             r.dot_bracket or "", f"{r.mfe_kcal_mol:.2f}" if r.mfe_kcal_mol is not None else "",
                             f"{r.runtime_s:.3f}", r.error or ""])
                 fh.flush()

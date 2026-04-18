@@ -130,9 +130,20 @@ micromamba run -n nap-thermo python scripts/run_all.py resources/smoke.fa result
 Useful flags:
 
 - `--only ViennaRNA NUPACK4 RNAstructure` — restrict to a subset of predictors.
-- `--na DNA` — switch to DNA mode (not every predictor supports this; MC-Fold, IPknot, and VFold2D are RNA-only).
+- `--na DNA` — switch to native DNA mode (uses each predictor's DNA thermodynamic parameters; MC-Fold, IPknot, and VFold2D are RNA-only and will error).
+- `--dna-as-rna` — for DNA aptamers, transcribe T→U internally and submit every sequence as RNA, so that RNA-only predictors (MC-Fold, IPknot, VFold2D) can also run. The CSV records `na_type=DNA` (the parent), while stdout annotates each run with `[DNA->RNA]`. **Caveat**: bypasses native DNA thermo parameters — treat the prediction as an RNA-proxy model of the DNA fold.
 
 The output `<outdir>/predictions.csv` has columns: `seq_id, tool, na_type, dot_bracket, mfe_kcal_mol, runtime_s, error`.
+
+### DNA aptamer workflow
+
+```bash
+source .envrc
+micromamba run -n nap-thermo python scripts/run_all.py \
+    resources/my_dna_aptamers.fa results/run1 --dna-as-rna
+```
+
+This runs all 10 predictors on T→U-transcribed sequences and reports the resulting dot-brackets tagged as DNA in the CSV.
 
 ## Pending
 
