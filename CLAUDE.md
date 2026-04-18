@@ -17,7 +17,7 @@ Lenguaje del pipeline: **Python** (con shell auxiliar cuando haga falta invocar 
 ## Repository layout
 
 - [scripts/](scripts/) — código del pipeline (wrappers por predictor, orquestación, parsers de salida).
-- [resources/](resources/) — secuencias de entrada, estructuras de referencia, parámetros, datos que consumen los predictores.
+- [inputs/](inputs/) — secuencias de entrada, estructuras de referencia, parámetros, datos que consumen los predictores.
 - [results/](results/) — salidas de cada predictor + comparaciones. No versionar outputs grandes.
 - [papers/](papers/) — literatura de referencia (PDFs) sobre cada predictor y benchmarks.
 - [docs/](docs/) — notas de instalación por herramienta, decisiones de diseño, protocolos.

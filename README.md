@@ -25,7 +25,7 @@ The four references in [papers/](papers/) frame the project:
 | [scripts/config.py](scripts/config.py) | Paths and env names |
 | [envs/](envs/) | Micromamba env specs (`nap-thermo`, `nap-hybrid`, `nap-learning`) |
 | [tools/](tools/) | Compiled binaries and sources for each predictor (not versioned) |
-| [resources/](resources/) | Input sequences. Includes [smoke.fa](resources/smoke.fa) (mini hairpin + tRNA-Phe) |
+| [inputs/](inputs/) | Input sequences. Includes [smoke.fa](inputs/smoke.fa) (mini hairpin + tRNA-Phe) |
 | [results/](results/) | Outputs — do not version large files |
 | [papers/](papers/) | Reference PDFs |
 | [docs/install-notes.md](docs/install-notes.md) | Detailed per-tool install notes |
@@ -126,7 +126,7 @@ micromamba run -n nap-thermo python scripts/run_all.py <input.fa> <outdir>
 Example (smoke):
 
 ```bash
-micromamba run -n nap-thermo python scripts/run_all.py resources/smoke.fa results/smoke/rna
+micromamba run -n nap-thermo python scripts/run_all.py inputs/smoke.fa results/smoke/rna
 ```
 
 Useful flags:
@@ -142,7 +142,7 @@ The output `<outdir>/predictions.csv` has columns: `seq_id, tool, na_type, dot_b
 ```bash
 source .envrc
 micromamba run -n nap-thermo python scripts/run_all.py \
-    resources/my_dna_aptamers.fa results/run1 --dna-as-rna
+    inputs/my_dna_aptamers.fa results/run1 --dna-as-rna
 ```
 
 This runs all 10 predictors on T→U-transcribed sequences and reports the resulting dot-brackets tagged as DNA in the CSV.

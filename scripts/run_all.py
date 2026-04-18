@@ -2,7 +2,7 @@
 """Run all predictors on a FASTA and write a CSV summary.
 
 Usage:
-    python scripts/run_all.py resources/my_aptamers.fa results/run_name
+    python scripts/run_all.py inputs/my_aptamers.fa results/run_name
 """
 
 from __future__ import annotations
