@@ -1,0 +1,19 @@
+tools/
+results/
+papers/
+*.pyc
+__pycache__/
+.envrc
+*.lock
+envs/*.lock
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Source tarballs / archives (users supply under tools/)
+*.tar.gz
+*.tar.bz2
+*.tgz
+*.zip

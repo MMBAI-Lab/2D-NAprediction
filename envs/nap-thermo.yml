@@ -1,0 +1,13 @@
+name: nap-thermo
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - viennarna=2.6
+  - numpy
+  - pandas
+  - biopython
+  - pip:
+      - # NUPACK 4.0.0.23 cp39 wheel installed by scripts/install/11_nupack4.sh

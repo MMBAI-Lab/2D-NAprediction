@@ -1,0 +1,15 @@
+name: nap-learning
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - boost-cpp
+  - gsl
+  - cmake
+  - make
+  - gxx_linux-64
+  - numpy
+  - pandas
+  - biopython
+  - openjdk=17
