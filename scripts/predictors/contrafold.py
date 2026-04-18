@@ -25,7 +25,9 @@ class CONTRAfold(Predictor):
             return Prediction(self.name, sequence, na_type, None, None, "",
                               0.0, error=f"binary not found: {CONTRAFOLD_BIN}")
 
-        seq = sequence.upper().replace("T", "U") if na_type == "RNA" else sequence.upper()
+        # RNA-trained model: transcribe T->U regardless of na_type so DNA
+        # inputs don't feed unknown bases into the scoring function.
+        seq = sequence.upper().replace("T", "U")
         with tempfile.NamedTemporaryFile("w", suffix=".fa", delete=False) as f:
             f.write(f">query\n{seq}\n")
             fa = Path(f.name)

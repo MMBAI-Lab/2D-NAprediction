@@ -15,7 +15,9 @@ class MXfold2(Predictor):
     env = ENV_HYBRID
 
     def predict(self, sequence: str, na_type: NAType = "RNA") -> Prediction:
-        seq = sequence.upper().replace("T", "U") if na_type == "RNA" else sequence.upper()
+        # RNA-trained model: transcribe T->U regardless of na_type so DNA
+        # inputs don't feed unknown bases into the scoring function.
+        seq = sequence.upper().replace("T", "U")
         with tempfile.NamedTemporaryFile("w", suffix=".fa", delete=False) as f:
             f.write(f">query\n{seq}\n")
             fa = Path(f.name)

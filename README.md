@@ -166,19 +166,19 @@ The 10 predictors fall into three tiers depending on how they handle DNA input.
 | VFold2D | `"Vfold2D is RNA-only"` |
 | IPknot | `"IPknot is RNA-only"` |
 
-**Accept DNA silently but RNA-proxy (3)** — the wrappers accept `na_type=DNA` without erroring, but the underlying models are RNA-trained:
+**Auto-transcribe DNA to RNA (3)** — these are RNA-trained and the wrappers unconditionally substitute T→U before submission, so the model never sees raw T characters. The `Prediction` object still carries the caller's `na_type` for CSV traceability:
 
-| Tool | Caveat |
+| Tool | Rationale |
 |---|---|
-| CONTRAfold | Trained on (A, U, G, C). With `--na DNA`, the wrapper does **not** perform T→U substitution, so raw T characters are fed to a model that does not know them — behavior is undefined. |
-| EternaFold | Same pattern (built on CONTRAfold). |
-| MXfold2 | Neural network trained on RNA; same pattern. |
+| CONTRAfold | Trained on (A, U, G, C); unknown bases would produce undefined scores. |
+| EternaFold | Built on CONTRAfold — same parameter alphabet. |
+| MXfold2 | Neural network trained on RNA; same constraint. |
 
 **Practical recommendation:**
 
 - For authentic DNA thermodynamics, use `--na DNA` combined with `--only ViennaRNA NUPACK4 RNAstructure mfold` to restrict to the native-4.
-- For uniform coverage across all 10 tools on a DNA aptamer (at the cost of RNA-proxy accuracy), use `--dna-as-rna`: sequences are transcribed T→U and submitted as RNA, the CSV labels them as DNA for traceability, and every predictor — including the RNA-only ones — produces a result.
-- Avoid `--na DNA` without `--only`: the three silently-accepting tools (CONTRAfold, EternaFold, MXfold2) will run on raw T-containing sequences through RNA-trained models and produce undefined output. The wrappers for these three could be hardened to either error or auto-convert T→U when `na_type=DNA`; this is a pending fix.
+- For uniform coverage across all 10 tools on a DNA aptamer (at the cost of RNA-proxy accuracy in the RNA-trained tools), use `--dna-as-rna`: every sequence is transcribed T→U and submitted as RNA, the CSV labels them as DNA for traceability, and every predictor — including the RNA-only ones — produces a result.
+- Calling `--na DNA` without `--only` is safe in the sense that CONTRAfold, EternaFold, and MXfold2 internally transcribe the input before scoring — but remember that those three are still RNA-proxy models of the DNA fold, not native DNA thermodynamics.
 
 ## Pending
 
