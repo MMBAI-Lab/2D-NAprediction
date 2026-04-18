@@ -32,3 +32,10 @@ El repo está vacío salvo por esas carpetas — no hay aún código, README, ni
 ## Licensing caveats al integrar predictores
 
 Varios de los paquetes listados tienen licencias no-libres o registro obligatorio (RNAstructure, UNAFold académico, NUPACK). Antes de distribuir binarios o scripts que los empaqueten, verificar los términos de cada licencia.
+
+## Documentación: README bilingüe
+
+- [README.md](README.md) es la versión canónica en **inglés**.
+- [README_ES.md](README_ES.md) es el espejo en **español**.
+- Ambos deben actualizarse **en el mismo commit** cuando cambie cualquiera de los dos — nunca dejar uno desincronizado.
+- Otros archivos `.md` (`docs/*.md`, etc.) van solo en inglés. Este CLAUDE.md queda en español.

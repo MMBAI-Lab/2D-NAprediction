@@ -1,5 +1,7 @@
 # 2D-NAprediction
 
+> [Leer en español](README_ES.md)
+
 Pipeline to compare predictors of **DNA/RNA aptamer secondary (2D) structure** from sequence. Wraps 10 tools behind a common Python interface and produces a CSV with predictions from each one against an input FASTA.
 
 ## Context
