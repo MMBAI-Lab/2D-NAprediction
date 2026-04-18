@@ -33,5 +33,9 @@ VFOLD2D_WEB = "http://rna.physics.missouri.edu/vfold2D"
 
 IPKNOT_BIN = TOOLS / "ipknot-master" / "build" / "ipknot"
 
+FORNAC_DIR = TOOLS / "fornac"
+FORNAC_JS = FORNAC_DIR / "dist" / "fornac.js"
+FORNAC_CSS = FORNAC_DIR / "dist" / "fornac.css"
+
 MCFOLD_WEB = "https://www.major.iric.ca/cgi-bin/MC-Fold/mcfold.static.cgi"
 MCFOLD_WEB_PASS = "lucy"

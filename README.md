@@ -113,6 +113,7 @@ bash scripts/install/22_mcfold.sh             # no-op (web-only)
 bash scripts/install/23_ipknot.sh
 bash scripts/install/30_mxfold2.sh            # creates nap-hybrid (+ CUDA)
 bash scripts/install/31_vfold2d.sh
+bash scripts/install/40_fornac.sh             # fornac visualizer (no build needed)
 bash scripts/install/verify_all.sh
 ```
 
@@ -136,6 +137,18 @@ Useful flags:
 - `--dna-as-rna` — for DNA aptamers, transcribe T→U internally and submit every sequence as RNA, so that RNA-only predictors (MC-Fold, IPknot, VFold2D) can also run. The CSV records `na_type=DNA` (the parent), while stdout annotates each run with `[DNA->RNA]`. **Caveat**: bypasses native DNA thermo parameters — treat the prediction as an RNA-proxy model of the DNA fold.
 
 The output `<outdir>/predictions.csv` has columns: `seq_id, tool, na_type, dot_bracket, mfe_kcal_mol, runtime_s, error`.
+
+### Visualizing predictions
+
+After a run, render all predictions from the CSV as a single HTML page using [fornac](https://github.com/ViennaRNA/fornac) (force-directed layout, same as the public http://rna.tbi.univie.ac.at/forna/ frontend):
+
+```bash
+micromamba run -n nap-thermo python scripts/visualize.py \
+    results/APT-PF1/dna_as_rna/predictions.csv \
+    --fasta /path/to/input.fa
+```
+
+This writes `structures.html` next to the CSV. Open the file in a browser; every `(seq_id, tool)` prediction with a dot-bracket appears as a card in a grid, each rendered live by `fornac.js` loaded from `tools/fornac/dist/` via a relative path. The visualizer transcribes T→U internally so DNA inputs render correctly. Pseudoknot characters (`[]`, `{}`) are supported. Pass `-o path/to/custom.html` to write elsewhere.
 
 ### DNA aptamer workflow
 

@@ -113,6 +113,7 @@ bash scripts/install/22_mcfold.sh             # no-op (solo web)
 bash scripts/install/23_ipknot.sh
 bash scripts/install/30_mxfold2.sh            # crea nap-hybrid (+ CUDA)
 bash scripts/install/31_vfold2d.sh
+bash scripts/install/40_fornac.sh             # visualizador fornac (sin build)
 bash scripts/install/verify_all.sh
 ```
 
@@ -136,6 +137,18 @@ Flags útiles:
 - `--dna-as-rna` — para aptámeros de ADN, transcribe T→U internamente y somete toda secuencia como ARN, de modo que los predictores RNA-only (MC-Fold, IPknot, VFold2D) también corren. El CSV registra `na_type=DNA` (el parent), mientras que stdout anota cada corrida con `[DNA->RNA]`. **Caveat**: bypasea los parámetros termodinámicos nativos de ADN — tratar la predicción como un modelo RNA-proxy del fold de ADN.
 
 La salida `<outdir>/predictions.csv` tiene columnas: `seq_id, tool, na_type, dot_bracket, mfe_kcal_mol, runtime_s, error`.
+
+### Visualización de las predicciones
+
+Después de una corrida, renderizá todas las predicciones del CSV en una sola página HTML usando [fornac](https://github.com/ViennaRNA/fornac) (layout force-directed, el mismo del frontend público http://rna.tbi.univie.ac.at/forna/):
+
+```bash
+micromamba run -n nap-thermo python scripts/visualize.py \
+    results/APT-PF1/dna_as_rna/predictions.csv \
+    --fasta /path/to/input.fa
+```
+
+Eso escribe `structures.html` al lado del CSV. Abrí el archivo en el browser; cada predicción `(seq_id, tool)` con dot-bracket aparece como una card en una grilla, renderizada en vivo por `fornac.js` cargado desde `tools/fornac/dist/` por path relativo. El visualizador transcribe T→U internamente, así que inputs de ADN se renderizan sin problema. Los caracteres de pseudonudo (`[]`, `{}`) están soportados. Pasá `-o path/al/custom.html` para escribir a otra ubicación.
 
 ### Workflow para aptámeros de ADN
 
