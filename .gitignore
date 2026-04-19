@@ -1,6 +1,12 @@
 tools/
 results/
 papers/
+
+# Aptamer input FASTAs are confidential by default. Only the smoke
+# samples are versioned; anything else under inputs/ stays local.
+inputs/*
+!inputs/smoke.fa
+!inputs/smoke_dna.fa
 *.pyc
 __pycache__/
 .envrc
