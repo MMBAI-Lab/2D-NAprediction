@@ -30,6 +30,20 @@ for f in dist/fornac.js dist/fornac.css; do
   fi
 done
 
+# fornac's UMD bundle treats d3 as an external; it reads `window.d3` at load
+# time. fornac 1.2.0's package.json pins d3 to ~3.5.13, so vendor the latest
+# 3.5.x minified build next to the fornac dist.
+D3_URL="https://d3js.org/d3.v3.min.js"
+D3_TARGET="$FORNAC_DIR/dist/d3.v3.min.js"
+if [[ ! -f "$D3_TARGET" ]]; then
+  echo "[40] Downloading $D3_URL ..."
+  curl -sSLf -o "$D3_TARGET" "$D3_URL"
+fi
+if [[ ! -s "$D3_TARGET" ]]; then
+  echo "[40] ERROR: d3 download failed ($D3_TARGET empty)" >&2
+  exit 1
+fi
+
 echo "[40] fornac ready at $FORNAC_DIR/dist/"
 ls -1 "$FORNAC_DIR/dist/"
 echo "[40] Done."

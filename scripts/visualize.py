@@ -24,7 +24,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from scripts.config import FORNAC_CSS, FORNAC_JS
+from scripts.config import FORNAC_CSS, FORNAC_D3, FORNAC_JS
 
 
 def parse_fasta(path: Path) -> dict[str, str]:
@@ -94,11 +94,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <div class="grid">
 {cards}
 </div>
+<script src="{d3_href}"></script>
 <script src="{js_href}"></script>
 <script>
 const PREDICTIONS = {predictions_json};
 
 window.addEventListener('load', () => {{
+  if (typeof fornac === 'undefined' || !fornac.FornaContainer) {{
+    console.error('fornac.FornaContainer not found; check that d3 v3 and fornac.js loaded');
+    return;
+  }}
+  const FornaContainer = fornac.FornaContainer;
   for (const p of PREDICTIONS) {{
     try {{
       const c = new FornaContainer('#' + p.id, {{
@@ -148,7 +154,7 @@ def main() -> int:
     if not args.fasta.exists():
         print(f"FASTA not found: {args.fasta}", file=sys.stderr)
         return 1
-    for f in (FORNAC_JS, FORNAC_CSS):
+    for f in (FORNAC_JS, FORNAC_CSS, FORNAC_D3):
         if not f.exists():
             print(f"fornac asset missing: {f}\n"
                   f"Run scripts/install/40_fornac.sh first.", file=sys.stderr)
@@ -215,11 +221,13 @@ def main() -> int:
 
     js_href = _relpath(FORNAC_JS, out_path)
     css_href = _relpath(FORNAC_CSS, out_path)
+    d3_href = _relpath(FORNAC_D3, out_path)
 
     rendered = HTML_TEMPLATE.format(
         csv_name=html.escape(str(args.csv.name)),
         n_cards=len(predictions),
         timestamp=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        d3_href=html.escape(d3_href),
         js_href=html.escape(js_href),
         css_href=html.escape(css_href),
         cards="\n".join(cards),
