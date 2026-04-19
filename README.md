@@ -140,7 +140,17 @@ The output `<outdir>/predictions.csv` has columns: `seq_id, tool, na_type, dot_b
 
 ### Visualizing predictions
 
-After a run, render all predictions from the CSV as a single HTML page using [fornac](https://github.com/ViennaRNA/fornac) (force-directed layout, same as the public http://rna.tbi.univie.ac.at/forna/ frontend):
+Every `run_all.py` invocation produces both `predictions.csv` and `structures.html` in the output directory. The HTML is a single self-contained page that renders every `(seq_id, tool)` prediction with a dot-bracket as a card in a grid, using [fornac](https://github.com/ViennaRNA/fornac) — force-directed layout, same as the public http://rna.tbi.univie.ac.at/forna/ frontend. `fornac.js` + `d3.v3.min.js` + `fornac.css` load from `tools/fornac/dist/` via a relative path, so the page works offline once the fornac bundle is installed.
+
+The visualizer transcribes T→U internally so DNA inputs render correctly, and pseudoknot characters (`[]`, `{}`) are supported.
+
+To skip the HTML step, pass `--no-visualize`:
+
+```bash
+micromamba run -n nap-thermo python scripts/run_all.py <input.fa> <outdir> --no-visualize
+```
+
+To render an HTML for an existing CSV (e.g. one produced before auto-visualize was wired in), call the visualizer directly:
 
 ```bash
 micromamba run -n nap-thermo python scripts/visualize.py \
@@ -148,7 +158,7 @@ micromamba run -n nap-thermo python scripts/visualize.py \
     --fasta /path/to/input.fa
 ```
 
-This writes `structures.html` next to the CSV. Open the file in a browser; every `(seq_id, tool)` prediction with a dot-bracket appears as a card in a grid, each rendered live by `fornac.js` loaded from `tools/fornac/dist/` via a relative path. The visualizer transcribes T→U internally so DNA inputs render correctly. Pseudoknot characters (`[]`, `{}`) are supported. Pass `-o path/to/custom.html` to write elsewhere.
+Pass `-o path/to/custom.html` to write elsewhere than `<csv_dir>/structures.html`.
 
 ### DNA aptamer workflow
 

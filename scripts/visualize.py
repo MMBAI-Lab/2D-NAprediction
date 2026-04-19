@@ -139,34 +139,30 @@ def _format_card_seq_html(seq: str, db: str) -> tuple[str, str]:
     return html.escape(seq), html.escape(db)
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("csv", type=Path, help="predictions.csv from run_all.py")
-    ap.add_argument("--fasta", type=Path, required=True,
-                    help="Input FASTA used to produce the CSV")
-    ap.add_argument("-o", "--output", type=Path, default=None,
-                    help="Output HTML path (default: <csv_dir>/structures.html)")
-    args = ap.parse_args()
+def render(csv_path: Path, fasta_path: Path,
+           output_path: Path | None = None) -> Path:
+    """Render predictions CSV + input FASTA into a fornac HTML page.
 
-    if not args.csv.exists():
-        print(f"CSV not found: {args.csv}", file=sys.stderr)
-        return 1
-    if not args.fasta.exists():
-        print(f"FASTA not found: {args.fasta}", file=sys.stderr)
-        return 1
+    Returns the path of the written HTML. Raises FileNotFoundError if any
+    required asset (CSV, FASTA, fornac bundle) is missing.
+    """
+    if not csv_path.exists():
+        raise FileNotFoundError(f"CSV not found: {csv_path}")
+    if not fasta_path.exists():
+        raise FileNotFoundError(f"FASTA not found: {fasta_path}")
     for f in (FORNAC_JS, FORNAC_CSS, FORNAC_D3):
         if not f.exists():
-            print(f"fornac asset missing: {f}\n"
-                  f"Run scripts/install/40_fornac.sh first.", file=sys.stderr)
-            return 1
+            raise FileNotFoundError(
+                f"fornac asset missing: {f}. Run scripts/install/40_fornac.sh first."
+            )
 
-    sequences = parse_fasta(args.fasta)
-    out_path = args.output or args.csv.parent / "structures.html"
+    sequences = parse_fasta(fasta_path)
+    out_path = output_path or csv_path.parent / "structures.html"
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     predictions: list[dict] = []
     cards: list[str] = []
-    with args.csv.open() as fh:
+    with csv_path.open() as fh:
         reader = csv.DictReader(fh)
         for i, row in enumerate(reader):
             seq_id = row["seq_id"]
@@ -224,7 +220,7 @@ def main() -> int:
     d3_href = _relpath(FORNAC_D3, out_path)
 
     rendered = HTML_TEMPLATE.format(
-        csv_name=html.escape(str(args.csv.name)),
+        csv_name=html.escape(str(csv_path.name)),
         n_cards=len(predictions),
         timestamp=datetime.now(timezone.utc).isoformat(timespec="seconds"),
         d3_href=html.escape(d3_href),
@@ -234,8 +230,24 @@ def main() -> int:
         predictions_json=json.dumps(predictions),
     )
     out_path.write_text(rendered)
-    print(f"Wrote {out_path} ({len(predictions)} rendered, "
-          f"{len(cards) - len(predictions)} skipped)")
+    return out_path
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("csv", type=Path, help="predictions.csv from run_all.py")
+    ap.add_argument("--fasta", type=Path, required=True,
+                    help="Input FASTA used to produce the CSV")
+    ap.add_argument("-o", "--output", type=Path, default=None,
+                    help="Output HTML path (default: <csv_dir>/structures.html)")
+    args = ap.parse_args()
+
+    try:
+        out_path = render(args.csv, args.fasta, args.output)
+    except FileNotFoundError as e:
+        print(str(e), file=sys.stderr)
+        return 1
+    print(f"Wrote {out_path}")
     return 0
 
 

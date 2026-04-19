@@ -25,6 +25,7 @@ from scripts.predictors.nupack import NUPACK
 from scripts.predictors.rnastructure import RNAstructure
 from scripts.predictors.vfold2d import VFold2D
 from scripts.predictors.vienna import ViennaRNA
+from scripts.visualize import render as render_html
 
 ALL_PREDICTORS = [
     ViennaRNA(), NUPACK(), RNAstructure(), MFold(),
@@ -64,6 +65,9 @@ def main() -> int:
                          "while stdout shows that the run used RNA. "
                          "Overrides --na. Caveat: bypasses native DNA thermo "
                          "parameters — treat results as an RNA-proxy model.")
+    ap.add_argument("--no-visualize", action="store_true",
+                    help="Skip the fornac HTML visualization step that runs "
+                         "by default after the CSV is written.")
     args = ap.parse_args()
 
     # When --dna-as-rna is set, predictors are called with RNA (the
@@ -102,6 +106,16 @@ def main() -> int:
                       f"({r.runtime_s:.2f}s) {r.dot_bracket or ''}", flush=True)
 
     print(f"\nWrote {out_csv}")
+
+    if not args.no_visualize:
+        try:
+            html_path = render_html(out_csv, args.fasta)
+            print(f"Wrote {html_path}")
+        except FileNotFoundError as e:
+            print(f"[warn] visualization skipped: {e}")
+        except Exception as e:
+            print(f"[warn] visualization failed: {e!r}")
+
     return 0
 
 

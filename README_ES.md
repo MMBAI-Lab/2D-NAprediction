@@ -140,7 +140,17 @@ La salida `<outdir>/predictions.csv` tiene columnas: `seq_id, tool, na_type, dot
 
 ### Visualización de las predicciones
 
-Después de una corrida, renderizá todas las predicciones del CSV en una sola página HTML usando [fornac](https://github.com/ViennaRNA/fornac) (layout force-directed, el mismo del frontend público http://rna.tbi.univie.ac.at/forna/):
+Cada invocación de `run_all.py` produce `predictions.csv` **y** `structures.html` en el directorio de salida. El HTML es una página autocontenida que renderiza toda predicción `(seq_id, tool)` con dot-bracket como una card en una grilla, usando [fornac](https://github.com/ViennaRNA/fornac) — layout force-directed, el mismo del frontend público http://rna.tbi.univie.ac.at/forna/. `fornac.js` + `d3.v3.min.js` + `fornac.css` se cargan desde `tools/fornac/dist/` por path relativo, así que la página funciona offline una vez instalado el bundle de fornac.
+
+El visualizador transcribe T→U internamente, así que inputs de ADN se renderizan sin problema, y los caracteres de pseudonudo (`[]`, `{}`) están soportados.
+
+Para saltearse el paso HTML, pasá `--no-visualize`:
+
+```bash
+micromamba run -n nap-thermo python scripts/run_all.py <input.fa> <outdir> --no-visualize
+```
+
+Para renderizar un HTML sobre un CSV que ya existe (p. ej. uno producido antes de cablear auto-visualize), invocá el visualizador directamente:
 
 ```bash
 micromamba run -n nap-thermo python scripts/visualize.py \
@@ -148,7 +158,7 @@ micromamba run -n nap-thermo python scripts/visualize.py \
     --fasta /path/to/input.fa
 ```
 
-Eso escribe `structures.html` al lado del CSV. Abrí el archivo en el browser; cada predicción `(seq_id, tool)` con dot-bracket aparece como una card en una grilla, renderizada en vivo por `fornac.js` cargado desde `tools/fornac/dist/` por path relativo. El visualizador transcribe T→U internamente, así que inputs de ADN se renderizan sin problema. Los caracteres de pseudonudo (`[]`, `{}`) están soportados. Pasá `-o path/al/custom.html` para escribir a otra ubicación.
+Pasá `-o path/al/custom.html` para escribir a otra ubicación distinta de `<csv_dir>/structures.html`.
 
 ### Workflow para aptámeros de ADN
 
