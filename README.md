@@ -212,20 +212,26 @@ The 10 predictors fall into three tiers depending on how they handle DNA input.
 - [ ] **G4/i-motif handling for DNA aptamers**: none of the 10 tools recognize these — they are Watson–Crick only. Kaushik 2016 documents the catalog; for screening, QGRS Mapper / G4Hunter would need to run upstream of the 2D step.
 - [ ] **NUPACK** is pinned to 4.0.0.23 (the 2021 rwollman mirror snapshot) as long as nupack.org remains paywalled; no 4.0.1.x bugfixes.
 
-## Licensing
+## Licensing & redistribution disclaimer
 
-Several tools ship under non-free or academic-only licenses:
+**This repository does not redistribute any of the third-party predictors, their source code, or their binaries.** The install scripts under `scripts/install/` expect the user to obtain each tool directly from its official source; when a predictor cannot be fetched automatically (academic registration, paywall, email-based request, and similar), the script prints the manual step and exits. The MMBAI-Lab/2D-NAprediction repository only ships our own wrappers, orchestration code, and documentation.
 
-| Tool | License | Caveat |
+Before running the install scripts, fetch each predictor from the official website listed below and abide by that tool's license terms:
+
+| Tool | License | Official source |
 |---|---|---|
-| NUPACK | Caltech academic (non-commercial) | Redistribution permitted, no commercial use |
-| mfold | Academic (Zuker / RPI) | — |
-| RNAstructure | GPL v2 | Free |
-| UNAFold | Academic (non-free) | Not installed — replaced by mfold |
-| VFold2D | Academic (Chen Lab) | — |
-| ViennaRNA, MXfold2, CONTRAfold, EternaFold, IPknot | Open-source (mixed GPL/BSD/MIT) | — |
+| ViennaRNA | Open-source (ViennaRNA license, close to MIT) | https://www.tbi.univie.ac.at/RNA/ |
+| NUPACK | Caltech academic (non-commercial); paid plan required since 2026 | https://nupack.org/ |
+| RNAstructure | GPL v2 | https://rna.urmc.rochester.edu/RNAstructure.html |
+| mfold | Academic (Zuker / RPI) | http://www.unafold.org/ |
+| CONTRAfold (csfoo-se fork) | BSD-style academic (Do et al.) | https://github.com/csfoo/contrafold-se |
+| EternaFold | Academic (Wayment-Steele et al.) | https://github.com/eternagame/EternaFold |
+| MC-Fold | Web-only via IRIC CGI; source not redistributed | https://major.iric.ca/MC-Fold/ |
+| MXfold2 | MIT | https://github.com/mxfold/mxfold2 |
+| VFold2D (part of VfoldPipeline) | Academic (Chen Lab); distributed by request | http://rna.physics.missouri.edu/vfold2D/ |
+| IPknot | MIT | https://github.com/satoken/ipknot |
 
-Before redistributing binaries or scripts that wrap these tools, verify each license.
+For any question about commercial use, publication attribution, or further redistribution, consult each tool's license file or its official website directly before proceeding.
 
 ## References
 
