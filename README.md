@@ -114,6 +114,7 @@ bash scripts/install/23_ipknot.sh
 bash scripts/install/30_mxfold2.sh            # creates nap-hybrid (+ CUDA)
 bash scripts/install/31_vfold2d.sh
 bash scripts/install/40_fornac.sh             # fornac visualizer (no build needed)
+bash scripts/install/41_playwright.sh         # headless Chromium for PNG rendering (~150 MB)
 bash scripts/install/verify_all.sh
 ```
 
@@ -159,6 +160,18 @@ micromamba run -n nap-thermo python scripts/visualize.py \
 ```
 
 Pass `-o path/to/custom.html` to write elsewhere than `<csv_dir>/structures.html`.
+
+### Rendering PNG images of each structure
+
+For static PNG images of every prediction — suitable for reports or figure panels — use `scripts/render_pngs.py`:
+
+```bash
+micromamba run -n nap-thermo python scripts/render_pngs.py \
+    results/APT-PF1/dna_as_rna/predictions.csv \
+    --fasta inputs/APT-PF1.fa
+```
+
+This opens each `(seq_id, tool)` prediction in headless Chromium (via Playwright), waits for the force-directed layout to settle, and saves `<csv_dir>/pngs/<seq_id>__<tool>.png`. Images are rendered at 2× device scale factor so they stay crisp when embedded at normal sizes. Configurable: `--width`, `--height`, `--settle-ms` (time in ms to let d3's force simulation converge, default 2500). Requires `41_playwright.sh` to have been run once.
 
 ### DNA aptamer workflow
 
